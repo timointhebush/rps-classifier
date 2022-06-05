@@ -1,0 +1,10 @@
+.python-version
+
+**/data
+**/dataset
+**/.idea
+**/trained_models
+**/__pycache__
+
+*.pth
+*.zip
