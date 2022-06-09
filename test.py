@@ -12,6 +12,7 @@ def load(model_fn, device):
 
 if __name__ == "__main__":
     idx_for_adjust = {0: 2, 1: 0, 2: 1}
+    idx_for_win = {0: 2, 1: 0, 2: 1}
     test_imgs_path = sys.argv[-1]
     model_fn = "./trained_models/imgSize.64.split.augmented.vanillaCnn.bs.128.epochs.20.pth"
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
@@ -27,6 +28,7 @@ if __name__ == "__main__":
             y_hat = model(x)
             prediction = torch.argmax(y_hat, dim=-1)
             for i in range(len(y_hat)):
-                result.append([file_names[i], idx_for_adjust[int(prediction[i])]])
+                idx_adjusted = idx_for_adjust[int(prediction[i])]
+                result.append([file_names[i], idx_for_win[idx_adjusted]])
     df = pd.DataFrame(result)
     df.to_csv("./output.txt", sep="\t", index=False, header=False)
