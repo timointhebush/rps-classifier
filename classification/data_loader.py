@@ -1,9 +1,12 @@
 import os
 
-from torch.utils.data import DataLoader, random_split, ConcatDataset
+from torch.utils.data import DataLoader, random_split, ConcatDataset, Dataset
+import torch
 
 from torchvision import transforms
-from torchvision.datasets import ImageFolder
+from torchvision.datasets import ImageFolder, DatasetFolder
+from PIL import Image
+import glob
 
 def load_dataset(
     data_transforms,
@@ -134,3 +137,44 @@ def divide_dataset(
         raise NotImplementedError('You need to specify dataset name.')
 
     return train_set, valid_set, test_set
+
+
+class CustomDataset(Dataset):
+    def __init__(self, file_names, data):
+        self.file_names = file_names
+        self.data = data
+        # self.labels = labels
+
+        super().__init__()
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        return self.file_names[idx], self.data[idx]
+
+
+def get_predict_loader(config, input_size: int, predict_dataset_dir: str):
+    data_transform = transforms.Compose([
+            transforms.Resize((input_size, input_size)),
+            transforms.ToTensor(),
+    ])
+    predict_img_list = glob.glob(predict_dataset_dir + "/*")
+    predict_img_list = sorted(predict_img_list, key=lambda x: int(x.split('/')[-1].split('.')[0]))
+
+    predict_img_tensor_list = []
+    predict_img_name_list = []
+    for img_path in predict_img_list:
+        file_name = img_path.split('/')[-1].split('.')[0]
+        img = Image.open(img_path).convert('RGB')
+        img_tensor = data_transform(img)
+        predict_img_tensor_list.append(img_tensor)
+        predict_img_name_list.append(file_name)
+    x = torch.stack(predict_img_tensor_list, 0)
+
+    predict_dataset = CustomDataset(predict_img_name_list, x)
+    predict_loader = DataLoader(
+        dataset=predict_dataset,
+        batch_size=config.batch_size
+    )
+    return predict_loader

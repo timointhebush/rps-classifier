@@ -40,7 +40,7 @@ def main(config):
     # Set device based on user defined configuration.
     device = torch.device('cpu') if config.gpu_id < 0 else torch.device('cuda:%d' % config.gpu_id)
 
-    train_loader, valid_loader, test_loader = get_loaders(config, 128)
+    train_loader, valid_loader, test_loader = get_loaders(config, 64)
 
     print("Train:", len(train_loader.dataset))
     print("Valid:", len(valid_loader.dataset))

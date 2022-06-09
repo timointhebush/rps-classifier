@@ -5,6 +5,9 @@
 **/.idea
 **/trained_models
 **/__pycache__
+**/test_imgs
 
 *.pth
 *.zip
+
+output.txt
