@@ -19,7 +19,7 @@ if __name__ == "__main__":
     config, state_dict = load(model_fn, device)
     model = ConvolutionalClassifier(3)
     model.load_state_dict(state_dict)
-    predict_loader = get_predict_loader(config, 64, "./test_imgs")
+    predict_loader = get_predict_loader(config, 64, test_imgs_path)
     result = []
     model.eval()
     with torch.no_grad():
